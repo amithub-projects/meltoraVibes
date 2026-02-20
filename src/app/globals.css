@@ -2,16 +2,18 @@
 
 @theme {
   --color-cocoa: #2A1B15;
-  --color-cream: #FDF6E3;
+  --color-cream: #2A0F0F;
   --color-gold: #D4AF37;
-  
+  --color-vanilla: #FDF6E3;
+  --color-beige: #F5F5DC;
+
   --font-display: var(--font-playfair);
   --font-sans: var(--font-inter);
 }
 
 @layer base {
   body {
-    @apply bg-cream text-cocoa transition-colors duration-300;
+    @apply bg-cream text-vanilla transition-colors duration-300;
   }
 }
 
@@ -20,5 +22,6 @@
 }
 
 .dark body {
-  @apply bg-cocoa text-cream;
+  background: #1A0A0A;
+  @apply text-vanilla;
 }

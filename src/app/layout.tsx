@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Meltora Vibes | Handcrafted Luxury Chocolates",
+  title: "MeltoraVibes | Handcrafted Luxury Chocolates",
   description: "Experience the finest handcrafted chocolates.",
 };
 
@@ -22,6 +22,7 @@ import { Navbar } from "@/components/Navbar";
 import { CartProvider } from "@/context/CartContext";
 import { CartDrawer } from "@/components/CartDrawer";
 import { ProductProvider } from "@/context/ProductContext";
+import { OrderProvider } from "@/context/OrderContext";
 
 export default function RootLayout({
   children,
@@ -40,11 +41,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ProductProvider>
-            <CartProvider>
-              <Navbar />
-              <CartDrawer />
-              {children}
-            </CartProvider>
+            <OrderProvider>
+              <CartProvider>
+                <Navbar />
+                <CartDrawer />
+                {children}
+              </CartProvider>
+            </OrderProvider>
           </ProductProvider>
         </ThemeProvider>
       </body>

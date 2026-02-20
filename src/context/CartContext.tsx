@@ -28,7 +28,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     // Load cart from local storage if available
     useEffect(() => {
-        const savedCart = localStorage.getItem("meltora-cart")
+        const savedCart = localStorage.getItem("meltoravibes-cart")
         if (savedCart) {
             try {
                 setCart(JSON.parse(savedCart))
@@ -40,7 +40,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     // Save cart to local storage
     useEffect(() => {
-        localStorage.setItem("meltora-cart", JSON.stringify(cart))
+        localStorage.setItem("meltoravibes-cart", JSON.stringify(cart))
     }, [cart])
 
     const addToCart = (product: Omit<CartItem, "quantity">) => {
