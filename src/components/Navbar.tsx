@@ -1,12 +1,13 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { ThemeToggle } from "./ThemeToggle"
 import { ShoppingBag, Menu, X } from "lucide-react"
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useCart } from "@/context/CartContext"
-
+import { useProducts } from "@/context/ProductContext"
 import { usePathname } from "next/navigation"
 
 export function Navbar() {
@@ -14,6 +15,7 @@ export function Navbar() {
     const isAdminPage = pathname === "/admin"
     const [isOpen, setIsOpen] = useState(false)
     const { toggleCart, cart } = useCart()
+    const { brandLogo } = useProducts()
     const itemCount = cart.reduce((acc, item) => acc + item.quantity, 0)
 
     return (
@@ -21,7 +23,12 @@ export function Navbar() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
-                    <Link href="/" className="font-display text-2xl font-bold text-vanilla hover:text-gold transition-colors">
+                    <Link href="/" className="flex items-center gap-2 font-display text-2xl font-bold text-vanilla hover:text-gold transition-colors">
+                        {brandLogo && (
+                            <div className="relative w-8 h-8 flex-shrink-0">
+                                <Image src={brandLogo} alt="Brand logo" fill className="object-contain" />
+                            </div>
+                        )}
                         MeltoraVibes
                     </Link>
 

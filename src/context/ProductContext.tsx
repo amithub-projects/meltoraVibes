@@ -117,6 +117,8 @@ interface ProductContextType {
     updateContactData: (data: ContactData) => void
     adminAuth: AdminAuth
     updateAdminAuth: (auth: AdminAuth) => void
+    brandLogo: string
+    updateBrandLogo: (logo: string) => void
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined)
@@ -160,6 +162,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
         userId: "admin",
         password: "password123"
     })
+    const [brandLogo, setBrandLogo] = useState("")
     const [isMounted, setIsMounted] = useState(false)
     const [hasLoaded, setHasLoaded] = useState(false)
 
@@ -222,6 +225,11 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
                 const savedAuth = localStorage.getItem("meltoravibes-admin-auth")
                 if (savedAuth) {
                     setAdminAuth(JSON.parse(savedAuth))
+                }
+
+                const savedBrandLogo = localStorage.getItem("meltoravibes-brand-logo")
+                if (savedBrandLogo) {
+                    setBrandLogo(savedBrandLogo)
                 }
             } catch (e) {
                 console.error("Failed to load data from localStorage:", e)
@@ -310,6 +318,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
                 localStorage.setItem("meltoravibes-hero-images", JSON.stringify(heroImages))
                 localStorage.setItem("meltoravibes-contact", JSON.stringify(contactData))
                 localStorage.setItem("meltoravibes-admin-auth", JSON.stringify(adminAuth))
+                localStorage.setItem("meltoravibes-brand-logo", brandLogo)
             } catch (e) {
                 console.error("Failed to save data to localStorage:", e)
                 if (e instanceof Error && e.name === 'QuotaExceededError') {
@@ -317,7 +326,7 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
                 }
             }
         }
-    }, [products, categories, promoData, aboutData, isMounted, hasLoaded, sellerEmail, shopFallbackText, heroImages, contactData, adminAuth])
+    }, [products, categories, promoData, aboutData, isMounted, hasLoaded, sellerEmail, shopFallbackText, heroImages, contactData, adminAuth, brandLogo])
 
     const addProduct = (newProduct: Omit<Product, "id">) => {
         const formattedPrice = newProduct.price.startsWith("₹")
@@ -384,7 +393,9 @@ export function ProductProvider({ children }: { children: React.ReactNode }) {
             contactData,
             updateContactData: setContactData,
             adminAuth,
-            updateAdminAuth: setAdminAuth
+            updateAdminAuth: setAdminAuth,
+            brandLogo,
+            updateBrandLogo: setBrandLogo
         }}>
             {children}
         </ProductContext.Provider>

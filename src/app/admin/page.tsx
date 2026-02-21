@@ -13,11 +13,40 @@ export default function AdminPage() {
         updateProductFeaturedStatus, promoData, updatePromoData, aboutData, updateAboutData,
         contactData, updateContactData,
         sellerEmail, updateSellerEmail, shopFallbackText, updateShopFallbackText, heroImages, updateHeroImages,
-        adminAuth, updateAdminAuth
+        adminAuth, updateAdminAuth, brandLogo, updateBrandLogo
     } = useProducts()
     const { orders, deleteOrder } = useOrders()
     const [activeTab, setActiveTab] = useState<"products" | "categories" | "orders" | "promotions" | "settings" | "gallery" | "about" | "contact">("products")
     const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+    // --- Brand Logo state ---
+    const [brandLogoInput, setBrandLogoInput] = useState("")
+    const [brandLogoSaved, setBrandLogoSaved] = useState(false)
+
+    const handleBrandLogoSave = () => {
+        if (!brandLogoInput) return
+        updateBrandLogo(brandLogoInput)
+        setBrandLogoSaved(true)
+        setTimeout(() => setBrandLogoSaved(false), 2500)
+    }
+
+    const compressLogoFile = (file: File, onDone: (base64: string) => void) => {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+            const img = new (window as any).Image()
+            img.src = reader.result
+            img.onload = () => {
+                const canvas = document.createElement('canvas')
+                const MAX = 400
+                let w = img.width, h = img.height
+                if (w > h) { if (w > MAX) { h = Math.round(h * MAX / w); w = MAX } } else { if (h > MAX) { w = Math.round(w * MAX / h); h = MAX } }
+                canvas.width = w; canvas.height = h
+                canvas.getContext('2d')?.drawImage(img, 0, 0, w, h)
+                onDone(canvas.toDataURL('image/png', 1))
+            }
+        }
+        reader.readAsDataURL(file)
+    }
     const [loginData, setLoginData] = useState({ userId: "", password: "" })
 
     // ... existing formData and effects ...
@@ -913,6 +942,66 @@ export default function AdminPage() {
                         <div className="flex justify-between items-center mb-6">
                             <h2 className="font-display text-2xl text-cocoa dark:text-cream">Hero Gallery (Max 6)</h2>
                             <p className="text-xs text-gold font-bold uppercase tracking-widest">{heroImages.length} / 6 Images</p>
+                        </div>
+
+                        {/* ── Brand Logo Card ── */}
+                        <div className="mb-8 p-6 bg-gold/5 rounded-2xl border border-gold/20">
+                            <div className="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 className="font-display text-xl text-cocoa dark:text-cream">Brand Logo</h3>
+                                    <p className="text-xs text-cocoa/50 dark:text-cream/50 mt-1">Appears left of "MeltoraVibes" in the navbar. Use a transparent PNG for best results.</p>
+                                </div>
+                                {(brandLogoInput || brandLogo) && (
+                                    <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-gold/30 bg-cocoa/10">
+                                        <Image src={brandLogoInput || brandLogo} alt="Logo preview" fill className="object-contain p-1" />
+                                    </div>
+                                )}
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-widest text-gold mb-2">Upload file</label>
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={e => {
+                                            const file = e.target.files?.[0]
+                                            if (!file) return
+                                            compressLogoFile(file, base64 => setBrandLogoInput(base64))
+                                        }}
+                                        className="w-full text-sm text-cocoa/60 dark:text-cream/60 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-gold file:text-cocoa hover:file:bg-yellow-500 cursor-pointer"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold uppercase tracking-widest text-gold mb-2">Or paste URL</label>
+                                    <input
+                                        type="url"
+                                        value={brandLogoInput.startsWith('data:') ? '' : brandLogoInput}
+                                        onChange={e => setBrandLogoInput(e.target.value)}
+                                        placeholder="https://example.com/logo.png"
+                                        className="w-full px-4 py-2 rounded-lg bg-white dark:bg-black/20 border border-cocoa/10 dark:border-white/10 text-cocoa dark:text-cream focus:outline-none focus:ring-2 focus:ring-gold text-sm"
+                                    />
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-3 mt-4">
+                                <button
+                                    onClick={handleBrandLogoSave}
+                                    disabled={!brandLogoInput}
+                                    className="px-6 py-2 bg-gold text-cocoa font-bold text-sm rounded-full hover:bg-yellow-500 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                    Save Logo
+                                </button>
+                                {brandLogo && (
+                                    <button
+                                        onClick={() => { updateBrandLogo(""); setBrandLogoInput("") }}
+                                        className="px-4 py-2 text-red-500 text-sm font-bold rounded-full hover:bg-red-500/10 transition-all"
+                                    >
+                                        Remove
+                                    </button>
+                                )}
+                                {brandLogoSaved && (
+                                    <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded-full">✓ Saved</span>
+                                )}
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
